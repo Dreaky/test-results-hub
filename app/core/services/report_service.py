@@ -10,7 +10,8 @@ class ReportService:
         # Any necessary initialization (e.g., logging)
         pass
 
-    def upload_test_results(self, results):
+    @staticmethod
+    def upload_test_results(results):
         """
         Insert parsed test results into the database.
 
@@ -52,7 +53,8 @@ class ReportService:
             # Insert the test result record
             # self.insert_test_result(run_id, case_id, payload)
 
-    def insert_test_result(self, run_id, case_id, payload):
+    @staticmethod
+    def insert_test_result(run_id, case_id, payload):
         """
         Insert a new test result into the database.
 
