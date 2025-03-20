@@ -1,7 +1,12 @@
 # app/core/services/report_service.py
+import os
+from dotenv import load_dotenv
 from app.core.tables.test_runs import TestRunTable
 from app.core.tables.test_cases import TestCaseTable
 from app.core.tables.test_results import TestResultTable
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 class ReportService:
@@ -10,17 +15,20 @@ class ReportService:
         pass
 
     @staticmethod
-    def upload_test_results(results):
-        """
-        Insert parsed test results into the database.
-
-        :param results: List of parsed test results containing 'caseId' and 'payload'.
-        Each 'payload' contains test status, elapsed time, and any comments.
-        """
+    def create_test_run(total, report_url):
+        run_name = os.getenv('TEST_RUN_NAME')
+        database = os.getenv('TEST_RUN_DATABASE')
+        deployment = os.getenv('TEST_RUN_DEPLOY')
+        run_date = os.getenv('TEST_RUN_DATE')
+        version = os.getenv('TEST_RUN_VERSION')
 
         # Create test run record once for all the results
-        run_id = TestRunTable.insert_test_run('Automated Test Run', 'Postgres', 'Linux', '2025-03-19', 'v1.0')
+        run_id = TestRunTable.insert_test_run(run_name, database, deployment, run_date, version, total, report_url)
 
+        return run_id
+
+    @staticmethod
+    def upload_test_results(run_id, results):
         for result in results:
             payload = result['payload']
             test_ids = payload['test_ids'].split(',')

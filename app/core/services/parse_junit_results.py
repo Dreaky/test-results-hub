@@ -30,6 +30,29 @@ def load_test_cases_from_file(input_file):
     return results
 
 
+def load_total_information(input_file):
+    # Initialize a dictionary to hold the total information
+    total = {}
+
+    # Parse the JUnit XML file using minidom
+    with open(input_file, 'r') as f:
+        xml_content = f.read()
+
+    # Parse the XML string
+    xml_doc = minidom.parseString(xml_content)
+    # Extract total information from the <testsuites> tag
+    testsuites = xml_doc.getElementsByTagName('testsuites')[0]
+
+    # Extract attributes from the testsuites tag
+    total['total_tests'] = testsuites.getAttribute('tests')
+    total['total_failures'] = testsuites.getAttribute('failures')
+    total['total_skipped'] = testsuites.getAttribute('skipped')
+    total['total_errors'] = testsuites.getAttribute('errors')
+    total['total_time'] = round(float(testsuites.getAttribute('time')))
+
+    return total
+
+
 def parse_case_ids(tc_name):
     # Find all occurrences of 'C' followed by digits (e.g., C11604, C11605)
     test_cases = re.findall(r'C(\d{4,})', tc_name)

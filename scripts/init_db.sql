@@ -3,12 +3,14 @@ CREATE TABLE test_run (
     id UUID PRIMARY KEY,
     name TEXT NOT NULL,
     database TEXT NOT NULL,
-    os TEXT NOT NULL,
-    ci TEXT NOT NULL,
+    deployment TEXT NOT NULL,
     date TIMESTAMP NOT NULL DEFAULT NOW(),
     version TEXT NOT NULL,
-    total_tests INT NOT NULL,  -- How many tests were in the run
-    failed_tests INT NOT NULL, -- How many failed
+    total_tests INT NOT NULL,
+    total_failures INT NOT NULL,
+    total_skipped INT NOT NULL,
+    total_errors INT NOT NULL,
+    total_time INT NOT NULL,
     report_url TEXT -- Link to full test report in MinIO
 );
 
