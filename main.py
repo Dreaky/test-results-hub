@@ -12,7 +12,7 @@ def process_and_insert_results(input_file):
 
 if __name__ == '__main__':
     # Define the path to your JUnit XML result file
-    input_junit = 'results-abis.xml'
+    input_junit = 'results-abis_f.xml'
 
     # Process and insert results into the database
     process_and_insert_results(input_junit)

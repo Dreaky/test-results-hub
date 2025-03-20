@@ -3,15 +3,17 @@ from app.infrastructure.database import execute_query
 import uuid
 
 
-class TestCaseRepository:
+class TestCaseTable:
     @staticmethod
     def insert_test_case(name, team, link, test_ids, app_name):
+        tc_id = str(uuid.uuid4())
         query = """
             INSERT INTO test_case (id, name, team, link, test_ids, app_name) 
             VALUES (%s, %s, %s, %s, %s, %s) 
             ON CONFLICT (id) DO NOTHING;
         """
-        execute_query(query, (str(uuid.uuid4()), name, team, link, test_ids, app_name))
+        execute_query(query, (tc_id, name, team, link, test_ids, app_name))
+        return tc_id
         
     @staticmethod
     def test_case_exists(test_ids):
@@ -26,13 +28,13 @@ class TestCaseRepository:
         return result
 
     @staticmethod
-    def update_test_case(case_id, name=None, team=None, link=None, test_ids=None, app_name=None):
-        if isinstance(case_id, list):
-            case_id = case_id[0]
+    def update_test_case(tc_id, name=None, team=None, link=None, test_ids=None, app_name=None):
+        if isinstance(tc_id, list):
+            tc_id = tc_id[0]
 
         # Fetch existing test_case to get current test_ids
         query_select = "SELECT name, team, link, test_ids, app_name FROM test_case WHERE id = %s;"
-        result = execute_query((query_select, (case_id,)), True)
+        result = execute_query((query_select, (tc_id,)), True)
 
         if result:
             # If the test case exists, get current values
@@ -51,6 +53,6 @@ class TestCaseRepository:
                 SET name = %s, team = %s, link = %s, test_ids = %s, app_name = %s
                 WHERE id = %s;
             """
-            execute_query(query_update, (name, team, link, test_ids, app_name, case_id))
+            execute_query(query_update, (name, team, link, test_ids, app_name, tc_id))
         else:
-            print(f"Test case with ID {case_id} does not exist.")
+            print(f"Test case with ID {tc_id} does not exist.")

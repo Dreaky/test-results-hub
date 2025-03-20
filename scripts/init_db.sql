@@ -23,21 +23,19 @@ CREATE TABLE test_case (
 );
 
 -- Stores ONLY failed test cases per test run
-CREATE TABLE failed_test (
+CREATE TABLE test_results (
     id UUID PRIMARY KEY,
     tc_id UUID NOT NULL REFERENCES test_case(id) ON DELETE CASCADE,
     run_id UUID NOT NULL REFERENCES test_run(id) ON DELETE CASCADE,
-    status TEXT CHECK (status = 'failed') NOT NULL,
-    elapsed TIME NOT NULL,
-    error_message TEXT,  -- Stores failure reason
-    failure_type TEXT CHECK (failure_type IN ('Assertion', 'Timeout', 'Crash', 'Other')),
-    log_url TEXT,  -- Link to failure logs in MinIO
+    status TEXT NOT NULL,
+    elapsed TEXT NOT NULL,
+    error_message TEXT,
+    log_url TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     UNIQUE (tc_id, run_id)  -- Avoid duplicate failures for the same test case in one run
 );
 
 -- Indexes for performance
 CREATE INDEX idx_test_run_date ON test_run(date);
-CREATE INDEX idx_failed_test_tc_id ON failed_test(tc_id);
-CREATE INDEX idx_failed_test_run_id ON failed_test(run_id);
-CREATE INDEX idx_failed_test_failure_type ON failed_test(failure_type);
+CREATE INDEX idx_test_results_tc_id ON test_results(tc_id);
+CREATE INDEX idx_test_results_run_id ON test_results(run_id);
