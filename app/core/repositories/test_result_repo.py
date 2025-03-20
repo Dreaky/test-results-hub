@@ -1,4 +1,4 @@
-from db_config import get_db_connection
+from app.infrastructure.database import get_db_connection
 
 class TestResultRepository:
     @staticmethod
@@ -14,3 +14,7 @@ class TestResultRepository:
         conn.commit()
         cur.close()
         conn.close()
+
+
+
+        

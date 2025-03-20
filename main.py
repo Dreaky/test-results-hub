@@ -1,20 +1,40 @@
-from test_run_repo import TestRunRepository
-from test_case_repo import TestCaseRepository
-from test_result_repo import TestResultRepository
-from minio_repo import MinIORepository
+from app.core.repositories.test_run_repo import TestRunRepository
+from app.core.repositories.test_case_repo import TestCaseRepository
+from app.core.repositories.test_result_repo import TestResultRepository
+from app.core.services.parse_junit_results import load_test_cases_from_file
+from app.core.services.report_service import ReportService
+from app.infrastructure.minio_client import MinIOClient
+import uuid
+from pprint import pprint
 
-# Example usage
-run_id = "1234"
-tc_id = "T001"
 
-# Insert test run
-TestRunRepository.insert_test_run(run_id, "Regression Suite", "Postgres", "Linux", "2025-03-19", "v1.2")
+# Generate valid UUIDs for run, test case, and test result
+def generate_uuids():
+    return {
+        'run_id': str(uuid.uuid4()),  # Test run ID
+        'tc_id': str(uuid.uuid4()),  # Test case ID
+        'test_result_id': str(uuid.uuid4())  # Test result ID
+    }
 
-# Insert test case
-TestCaseRepository.insert_test_case(tc_id, "Login Test", "QA Team", "http://jira.com/bug123", "T001", "Web App")
 
-# Upload report to MinIO
-report_url = MinIORepository.upload_report("report_1234.html")
+def process_and_insert_results(input_file):
+    # Load the test cases from the XML file
+    results = load_test_cases_from_file(input_file)
+    pprint(results)
+    
 
-# Insert failed test
-TestResultRepository.insert_failed_test("5678", tc_id, run_id, "FAILED", 15.3, "Regression", "AssertionError", report_url)
+
+    # Insert results into the database using the service layer
+    report_service = ReportService()
+    report_service.upload_test_results(results)
+
+
+if __name__ == '__main__':
+    # Define the path to your JUnit XML result file
+    input_junit = 'results-abis.xml'  # Provide path to your JUnit XML result file
+
+    # Process and insert results into the database
+    process_and_insert_results(input_junit)
+
+    # Insert test data (this is separate from the result parsing)
+    # insert_test_data()

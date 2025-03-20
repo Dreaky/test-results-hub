@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database Service
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: test_reports_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - default
+
+  # MinIO Storage Service
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      MINIO_ACCESS_KEY: minioaccesskey
+      MINIO_SECRET_KEY: miniosecretkey
+    ports:
+      - "9005:9005"
+    command: server /data
+    volumes:
+      - minio_data:/data
+    networks:
+      - default
+
+volumes:
+  postgres_data:
+  minio_data:
+
+networks:
+  default:
+    driver: bridge
