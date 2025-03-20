@@ -1,5 +1,5 @@
-from app.core.repositories.test_run_repo import TestRunRepository
-from app.core.repositories.test_result_repo import TestResultRepository
+from app.core.tables.test_run_repo import TestRunRepository
+from app.core.tables.test_result_repo import TestResultRepository
 from app.infrastructure.minio_client import MinIOClient
 
 class TestService:

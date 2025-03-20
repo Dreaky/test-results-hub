@@ -1,6 +1,3 @@
-from app.core.repositories.test_run_repo import TestRunRepository
-from app.core.repositories.test_case_repo import TestCaseRepository
-from app.core.repositories.test_result_repo import TestResultRepository
 from app.core.services.parse_junit_results import load_test_cases_from_file
 from app.core.services.report_service import ReportService
 from app.infrastructure.minio_client import MinIOClient

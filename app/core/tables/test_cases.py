@@ -1,27 +1,20 @@
 # app/core/repositories/test_case_repo.py
-from app.infrastructure.database import get_db_connection
+from app.infrastructure.database import execute_query
 import uuid
 
 
 class TestCaseRepository:
     @staticmethod
     def insert_test_case(name, team, link, test_ids, app_name):
-        conn = get_db_connection()
-        cur = conn.cursor()
         query = """
             INSERT INTO test_case (id, name, team, link, test_ids, app_name) 
             VALUES (%s, %s, %s, %s, %s, %s) 
             ON CONFLICT (id) DO NOTHING;
         """
-        cur.execute(query, (str(uuid.uuid4()), name, team, link, test_ids, app_name))
-        conn.commit()
-        cur.close()
-        conn.close()
+        execute_query(query, (str(uuid.uuid4()), name, team, link, test_ids, app_name))
         
     @staticmethod
     def test_case_exists(test_ids):
-        conn = get_db_connection()
-        cur = conn.cursor()
         query = """
             SELECT id
             FROM test_case 
@@ -29,23 +22,17 @@ class TestCaseRepository:
             LIMIT 1;
         """
         # Use a wildcard '%' to check if the test_ids appear as a part of the list
-        cur.execute(query, (f"%{test_ids}%",))
-        result = cur.fetchone()
-        cur.close()
-        conn.close()
+        result = execute_query(query, (f"%{test_ids}%",), True)
         return result
 
     @staticmethod
-    def update_test_case(id, name=None, team=None, link=None, test_ids=None, app_name=None):
-        conn = get_db_connection()
-        cur = conn.cursor()
-        if isinstance(id, list):
-            id = id[0]  
+    def update_test_case(case_id, name=None, team=None, link=None, test_ids=None, app_name=None):
+        if isinstance(case_id, list):
+            case_id = case_id[0]
 
         # Fetch existing test_case to get current test_ids
         query_select = "SELECT name, team, link, test_ids, app_name FROM test_case WHERE id = %s;"
-        cur.execute(query_select, (id,))
-        result = cur.fetchone()
+        result = execute_query((query_select, (case_id,)), True)
 
         if result:
             # If the test case exists, get current values
@@ -64,12 +51,6 @@ class TestCaseRepository:
                 SET name = %s, team = %s, link = %s, test_ids = %s, app_name = %s
                 WHERE id = %s;
             """
-            cur.execute(query_update, (name, team, link, test_ids, app_name, id))
-
-            # Commit the changes to the database
-            conn.commit()
+            execute_query(query_update, (name, team, link, test_ids, app_name, case_id))
         else:
-            print(f"Test case with ID {id} does not exist.")
-
-        cur.close()
-        conn.close()
+            print(f"Test case with ID {case_id} does not exist.")

@@ -1,7 +1,7 @@
 # app/core/services/report_service.py
-from app.core.repositories.test_run_repo import TestRunRepository
-from app.core.repositories.test_case_repo import TestCaseRepository
-from app.core.repositories.test_result_repo import TestResultRepository
+from app.core.tables.test_runs import TestRunRepository
+from app.core.tables.test_cases import TestCaseRepository
+from app.core.tables.test_results import TestResultRepository
 import uuid
 
 
@@ -25,9 +25,9 @@ class ReportService:
         for result in results:
             payload = result['payload']
             test_ids = payload['test_ids'].split(',')
-            case_id = TestCaseRepository.test_case_exists(test_ids[0]) # todo maybe latter rework to validate all
+            case_id = TestCaseRepository.test_case_exists(test_ids[0])
             print(case_id)
-           
+
             # Check if the test case already exists 
             if case_id is None:
                 # Insert the test case if it doesn't exist
